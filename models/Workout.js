@@ -2,7 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema
 
 const WorkoutSchema = new Schema({
-    title: String,
+    title: {
+        type: String,
+    },
     body: Array
 })
 
