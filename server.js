@@ -15,10 +15,12 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost.populatedb", {useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workoutdb", { useNewUrlParser: true });
 
-// db.workout.create({
-//     // TODO: create the workout
-// })
+app.get("/exercise", (req, res)=>{
+    res.render("/exercise")
+})
 
-
+app.listen(PORT,()=>{
+    console.log(`App running on port ${PORT}!`);
+})
