@@ -5,7 +5,9 @@ const WorkoutSchema = new Schema({
     title: {
         type: String,
     },
-    body: Array
+    body: {
+        type: Array
+    }
 })
 
 const Workout = mongoose.model("Workout", WorkoutSchema)
