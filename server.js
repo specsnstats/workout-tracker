@@ -1,13 +1,12 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-const path = require('path');
-
+const mongojs = require("mongojs");
 
 const PORT = process.env.PORT || 3000;
 
 const db = require("./models");
-const { Workout } = require("./models");
+const { Workout, Exercise } = require("./models");
 
 const app = express();
 
@@ -26,12 +25,34 @@ app.get("/:file", (req,res)=>{
 
 // finish after i have added the POST ROUTES
 app.get("/api/workouts", (req,res)=>{
-    db.workout.find({})
+    db.Workout.find({})
     .then(dbWorkout =>{
         res.json(dbWorkout)
     })
     .catch(err=>{
         res.json(err)
+    })
+})
+
+app.put("/api/workouts", (req,res)=>{
+    const workout = new Workout(req.body)
+    
+    Workout.update(workout)
+        .then(dbWorkout=>{
+            res.json(dbWorkout)
+        })
+        .catch(err =>{
+            res.json(err)
+            console.log(err)
+        })
+})
+
+app.put("/api/workouts/:id", (req,res)=>{
+    db.Workout.create({_id:mongojs.ObjectId(req.params.id)}, (err,data)=>{
+        console.log("this is data: "+data)
+        if(err){
+            console.log(err)
+          } res.json(data)
     })
 })
 
