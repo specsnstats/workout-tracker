@@ -34,10 +34,9 @@ app.get("/api/workouts", (req,res)=>{
     })
 })
 
-app.put("/api/workouts", (req,res)=>{
-    const workout = new Workout(req.body)
-    
-    Workout.update(workout)
+app.post("/api/workouts", (req, res)=>{
+    console.log(req)
+    db.Workout.create(req.body)
         .then(dbWorkout=>{
             res.json(dbWorkout)
         })
@@ -47,12 +46,25 @@ app.put("/api/workouts", (req,res)=>{
         })
 })
 
+// app.put("/api/workouts", (req,res)=>{
+//     const workout = new Workout(req.body)
+    
+//     db.Workout.update(workout)
+//         .then(dbWorkout=>{
+//             res.json(dbWorkout)
+//         })
+//         .catch(err =>{
+//             res.json(err)
+//             console.log(err)
+//         })
+// })
+ 
 app.put("/api/workouts/:id", (req,res)=>{
-    db.Workout.create({_id:mongojs.ObjectId(req.params.id)}, (err,data)=>{
+    db.Workout.findByIdAndUpdate(req.params.id, (err,data)=>{
         console.log("this is data: "+data)
         if(err){
             console.log(err)
-          } res.json(data)
+          } 
     })
 })
 
