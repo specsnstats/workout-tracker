@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const mongojs = require("mongojs");
+const path = require("path")
 
 const PORT = process.env.PORT || 3000;
 
@@ -25,10 +26,13 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout",
     useFindAndModify:true
  });
 
-app.get("/:file", (req,res)=>{
-    res.sendFile(__dirname + "\\public\\" + req.params.file + ".html");
-});
+app.get("/stats", (req,res)=>{
+    res.sendFile(path.join(__dirname,"public/stats.html"))
+})
 
+app.get("/exercise", (req,res)=>{
+    res.sendFile(path.join(__dirname,"public/exercise.html"))
+})
 // finish after i have added the POST ROUTES
 app.get("/api/workouts", (req,res)=>{
     db.Workout.find({})
