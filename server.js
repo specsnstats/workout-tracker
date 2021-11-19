@@ -25,48 +25,83 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout",
     useCreateIndex: true,
     useFindAndModify:true
  });
-// POSTS
 
-app.post("/api/workouts", (req, res)=>{
-    console.log(req)
-    db.Workout.create(req.body)
-        .then(dbWorkout=>{
-            res.json(dbWorkout)
+// api/workouts
+    //CREATE ROUTES
+    app.post("/api/workouts", ({ body }, res) => {
+        db.Workout.create(body)
+          .then(workout => {
+            res.json(workout);
+          })
+          .catch(err => {
+            res.json(err);
+          });
+      })
+
+    // READ ROUTES
+      app.get("/api/workouts", (req,res) => {
+        db.Workout.aggregate([
+        {
+          $match: { } 
+        },{
+          $addFields: {
+            totalDuration: { $sum: "$exercises.duration" }
+          }
+        }])
+          .then(workout => {
+            res.json(workout);
+          })
+          .catch(err => {
+            res.json(err);
+          });
+      })
+
+      app.get("/api/workouts/range", (req,res) => {
+        db.Workout.aggregate([
+          {
+            $match: {}
+          },{
+            $sort: {day: -1}
+          },{
+            $limit: 7 
+          },{
+          $addFields: {
+            totalWeight: { $sum: "$exercises.weight" },
+            totalDuration: { $sum: "$exercises.duration" }
+          }
+        }])
+        .then(workout => {
+          res.json(workout);
         })
-        .catch(err =>{
-            res.json(err)
-            console.log(err)
-        })
-})
+        .catch(err => {
+          res.json(err);
+        });
+      })
 
-// GETS
+      
+      app.get("/exercise", (req, res) => {
+        res.redirect("/exercise.html");
+      });
 
-app.get("/stats", (req,res)=>{
-    res.sendFile(path.join(__dirname,"public/stats.html"))
-})
+      app.get("/stats", (req, res) => {
+        res.redirect("/stats.html");
+      });
 
-app.get("/exercise", (req,res)=>{
-    res.sendFile(path.join(__dirname,"public/exercise.html"))
-})
 
-// finish after i have added the POST ROUTES
-app.get("/api/workouts", (req,res)=>{
-    db.Workout.find({})
-    .then(dbWorkout =>{
-        res.json(dbWorkout)
-    })
-    .catch(err=>{
-        res.json(err)
-    })
-})
-
-app.get("/api/workouts/range", (req,res)=>{
-    db.Workout.find().sort({_id:-1}).limit(8).exec((err, data)=>{
-        if(err){
-            res.send(err)
-        } else res.json(data)
-    })
-})
+    // UPDATE ROUTES
+      app.put("/api/workouts/:id", (req,res) => {
+        db.Workout.updateOne(
+          { _id: req.params.id },
+          { $push: { exercises: req.body } },
+          (error, success) => {
+            if (error) {
+              res.json(error);
+            } else {
+              res.json(success);
+            }
+          }
+        );
+      })
 
 // PUTS
 
@@ -82,39 +117,6 @@ app.get("/api/workouts/range", (req,res)=>{
 //             console.log(err)
 //         })
 // })
-
- 
-app.put("/api/workouts/:id", (req,res)=>{
-    db.Workout.findByIdAndUpdate(req.params.id, (err,data)=>{
-        console.log("this is data: "+data)
-        if(err){
-            console.log(err)
-          } else {
-              res.send(data)
-          }
-    }).then(()=>{
-        db.Workout.findById(req.params.id, (err, data)=>{
-            let durationTotal = 0
-            if(err){
-                console.log(err)
-                res.send(err)
-            } else{
-                for(let i = 0; i< data.exercises.length;i++){
-                    durationTotal += data.exercises[i].duration
-                }
-            }
-            const number = durationTotal
-            db.Workout.updateOne({_id: req.params.id}, {$set:{durationTotal:number}}, (err, data)=>{
-                if(err){
-                    console.log(err)
-                    res.send(err)
-                }
-                res.send(data)
-                console.log(data)
-            })
-        })
-    })
-})
 
 app.listen(PORT,()=>{
     console.log(`App running on port ${PORT}!`);
