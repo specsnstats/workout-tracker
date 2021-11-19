@@ -39,23 +39,6 @@ app.post("/api/workouts", (req, res)=>{
         })
 })
 
-app.post("/api/workouts", (req, res) => {
-    const workout = req.body;
-    console.log(workout);
-    if (workout) {
-        workout.day = new Date(new Date().setDate(new Date().getDate()));
-        workout.exercises = [];
-    }
-    db.Workout.create(workout)
-        .then((err, data) => {
-            if (err) {
-                res.send(err);
-            } else {
-                res.json(data);
-            }
-        });
-});
-
 // GETS
 
 app.get("/stats", (req,res)=>{
