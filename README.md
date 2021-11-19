@@ -1,6 +1,4 @@
-# Title
-
-## Workout Tracker
+# Workout Tracker
  
 - [Project Description](./newREADME#project-description)
 - [Installation Guide](./newREADME#installation-guide)
