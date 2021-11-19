@@ -26,19 +26,16 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout",
     useFindAndModify:true
  });
 
-// api/workouts
-    //CREATE ROUTES
-    app.post("/api/workouts", ({ body }, res) => {
-        db.Workout.create(body)
-          .then(workout => {
-            res.json(workout);
+    app.post("/api/workouts", (req, res) => {
+        db.Workout.create(req.body)
+          .then(dbWorkout => {
+            res.json(dbWorkout);
           })
           .catch(err => {
             res.json(err);
           });
       })
 
-    // READ ROUTES
       app.get("/api/workouts", (req,res) => {
         db.Workout.aggregate([
         {
@@ -77,7 +74,6 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout",
           res.json(err);
         });
       })
-
       
       app.get("/exercise", (req, res) => {
         res.redirect("/exercise.html");
@@ -87,8 +83,6 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout",
         res.redirect("/stats.html");
       });
 
-
-    // UPDATE ROUTES
       app.put("/api/workouts/:id", (req,res) => {
         db.Workout.updateOne(
           { _id: req.params.id },
