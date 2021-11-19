@@ -104,7 +104,7 @@ app.put("/api/workouts/:id", (req,res)=>{
                 }
             }
             const number = durationTotal
-            db.Workout.updateOne(req.params.id, {$set:{durationTotal:number}}, (err, data)=>{
+            db.Workout.updateOne({_id: req.params.id}, {$set:{durationTotal:number}}, (err, data)=>{
                 if(err){
                     console.log(err)
                     res.send(err)
